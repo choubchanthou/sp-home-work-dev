@@ -1,0 +1,6 @@
+[submodule "sp-home-work-api"]
+	path = sp-home-work-api
+	url = https://github.com/choubchanthou/sp-home-work-api.git
+[submodule "sp-home-work"]
+	path = sp-home-work
+	url = https://github.com/choubchanthou/sp-home-work.git
