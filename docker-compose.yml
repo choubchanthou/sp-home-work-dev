@@ -1,0 +1,50 @@
+version: '3.9'
+services:
+  api:
+    container_name: sp-home-work-api
+    build: ./sp-home-work-api
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=sqlserver://sa:secret@db:1433/sp-app
+      - MINIO_ENDPOINT=minio
+      - MINIO_PORT=9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_BUCKET=app
+    depends_on:
+      - db
+      - minio
+  app:
+    container_name: sp-home-work
+    build: ./sp-home-work
+    ports:
+      - "80:80"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://nestjs:3000
+    depends_on:
+      - nestjs
+  db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=secret
+    volumes:
+      - mssql-data:/var/opt/mssql
+
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+    environment:
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+    command: server /data/app
+    volumes:
+      - minio-data:/data
+
+volumes:
+  mssql-data:
+  minio-data:
