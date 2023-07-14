@@ -6,7 +6,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - DATABASE_URL=sqlserver://sa:secret@db:1433/sp-app
+      - DATABASE_URL=sqlserver://sa:Bitc!1234!@db:1433/sp-app
       - MINIO_ENDPOINT=minio
       - MINIO_PORT=9000
       - MINIO_ACCESS_KEY=minioadmin
@@ -19,18 +19,18 @@ services:
     container_name: sp-home-work
     build: ./sp-home-work
     ports:
-      - "80:80"
+      - "8080:3000"
     environment:
       - NEXT_PUBLIC_API_URL=http://nestjs:3000
     depends_on:
-      - nestjs
+      - api
   db:
-    image: mcr.microsoft.com/mssql/server:2019-latest
+    image: mcr.microsoft.com/mssql/server:2022-latest
     ports:
       - "1433:1433"
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=secret
+      - SA_PASSWORD=Bitc!1234!
     volumes:
       - mssql-data:/var/opt/mssql
 
