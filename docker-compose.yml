@@ -3,10 +3,11 @@ services:
   api:
     container_name: sp-home-work-api
     build: ./sp-home-work-api
+    command: sh -c "yarn && yarn start:dev"
     ports:
       - "3000:3000"
     environment:
-      - DATABASE_URL=sqlserver://sa:Bitc!1234!@db:1433/sp-app
+      - DATABASE_URL=sqlserver://sa:Bitc!1234!@db:1433/sp_app
       - MINIO_ENDPOINT=minio
       - MINIO_PORT=9000
       - MINIO_ACCESS_KEY=minioadmin
@@ -15,17 +16,27 @@ services:
     depends_on:
       - db
       - minio
+    volumes:
+      - "./:/app"
+      - /app/sp-home-work-api/node_modules
   app:
     container_name: sp-home-work
     build: ./sp-home-work
+    command: sh -c "yarn && yarn dev"
     ports:
       - "8080:3000"
     environment:
       - NEXT_PUBLIC_API_URL=http://nestjs:3000
     depends_on:
       - api
+    volumes:
+      - "./:/app"
+      - /app/sp-home-work/node_modules
   db:
+    container_name: db
     image: mcr.microsoft.com/mssql/server:2022-latest
+    # command: bash -c "./entrypoint.sh"
+    # entrypoint: sh -c "sleep 30s && /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Bitc!1234! -d master -i db-init.sql"
     ports:
       - "1433:1433"
     environment:
@@ -33,8 +44,11 @@ services:
       - SA_PASSWORD=Bitc!1234!
     volumes:
       - mssql-data:/var/opt/mssql
+      - ./sp-home-work-api/db/entrypoint.sh:/entrypoint.sh
+      - ./sp-home-work-api/db/db-init.sql:/db-init.sql
 
   minio:
+    container_name: minio
     image: minio/minio
     ports:
       - "9000:9000"
@@ -48,3 +62,7 @@ services:
 volumes:
   mssql-data:
   minio-data:
+  yarn-api:
+  yarn-app:
+networks:
+  default:
